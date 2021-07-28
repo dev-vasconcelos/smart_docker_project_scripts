@@ -6,6 +6,7 @@
 Default_values() {
 	CONTAINERPORT=8080
 	HOSTPORT=8080
+	VERSION=1.0
 }
 
 Help() {
@@ -21,26 +22,8 @@ Help() {
 	echo "exemplo: $ ./selfrun.sh -n ProjetoInteressante  -p 9099 -c 5001 -v 1.0"
 }
 
-Get_arguments() {
-	while getopts hn:v:p:c: flags
-	do
-		case "${flags}" in
-			h) 	Help
-				exit;;
-			n) APPNAME=${OPTARG};;
-			v) ${VERSION}=${OPTARG};;
-			p) ${HOSTPORT}=${OPTARG};;
-			c) ${CONTAINERPORT}=${OPTARG};;
-			w) ${NET}=${OPTARG};;
-			i) ${IP}=${OPTARG};; 
-			l) ${VOLUME}=${OPTGARG};;
-			f) ${PROJECTFOLDE}=${OPTARG};;
-
-		esac
-	done
-}
-
 Validate_arguments() {
+	ERROR=0
 	if [ "${APPNAME}" == "" ]; then
 		echo "Project -(n)ame required!"
 		ERROR=1
@@ -57,10 +40,21 @@ Validate_arguments() {
 		ERROR=1
 	fi
 
-	if [ $ERROR -gt 0 ]; then
+	if [ "${RUNOPTION}" == "" ];then
+		echo "(r)un option required!"	
+	fi
+
+	if [ "${RUNOPTION}" != "" ] && [ "${RUNOPTION}" != "b" ] && [ "${RUNOPTION}" != "c" ]; then
+		echo "(r)un option precisa ser 'b' ou 'c'"
+		ERROR=1
+	fi
+
+	if [ $ERROR -eq 1 ]; then
 		echo "ERROR: exit with code 1"
 		exit 1
 	fi
+
+
 }
 
 Build_and_run() {
@@ -68,27 +62,28 @@ Build_and_run() {
 	LOWERNAME=$(echo $LOWERNAME | tr '[:upper:]' '[:lower:]')
 	IMAGENAME=transpnet/$LOWERNAME:$VERSION
 	CONTAINERNAME=$LOWERNAME-container
-	echo $APPNAME
-	echo $LOWERNAME
-	echo $IMAGENAME
-	echo $CONTAINERNAME
+	echo "+--------------+"
+	echo "Nome da aplicação: $APPNAME"
+	echo "Nome da imagem: $IMAGENAME"
+	echo "Nome do container: $CONTAINERNAME"
+	echo "+--------------+"
 	##
 	# Add backup routine option
 	##
 
 	# docker rm -f $CONTAINERNAME
 
-	# chmod +x dockerfile-generator.sh
+	chmod +x dockerfile-generator.sh
 
-	# ./dockerfile-generator.sh - options
+	./dockerfile-generator.sh -f $PROJECTFOLDER -n $APPNAME -$RUNOPTION
 
 	if [ "$VOLUME" == "" ]
 	then
-		echo "é padrão"
+		echo "INFO: Nenhum volume especificado"
 	fi
 	if [ "$NET" == "" ]
 	then
-		echo "net padrao"
+		echo "INFO: Nenhuma rede especificada"
 	fi
 
 	# docker run -td --net nomedanet --ip 127.21.0.69 -v $(pwd)/Volume:/app/Arquivos --name $CONTAINERNAME -p $PORTHOST:$PORTCONTAINER --restart unless-stopped $IMAGENAME
@@ -96,12 +91,28 @@ Build_and_run() {
 	# docker build -t #IMAGENAME
 
 }
+
 main() {
-	APPNAME="AAAAAAAA"
 	Default_values
-	Get_arguments
-	#Validate_arguments
+	Validate_arguments
 	Build_and_run
 }
 
+while getopts hn:v:p:c:w:i:l:f:r: flags
+do
+	case "${flags}" in
+		h) 	Help
+			exit;;
+		n) eval APPNAME=\"${OPTARG}\";;
+		v) VERSION=${OPTARG};;
+		p) HOSTPORT=${OPTARG};;
+		c) CONTAINERPORT=${OPTARG};;
+		w) NET=${OPTARG};;
+		i) IP=${OPTARG};; 
+		l) VOLUME=${OPTGARG};;
+		f) PROJECTFOLDER=${OPTARG};;
+		r) RUNOPTION=${OPTARG};;
+
+	esac
+done
 main
