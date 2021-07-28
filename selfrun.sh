@@ -1,7 +1,10 @@
 #! /bin/bash
 
-#Init global
-# APPNAME="CACETA"
+
+
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+DEFAULT='\033[0m'
 
 Default_values() {
 	CONTAINERPORT=8080
@@ -18,49 +21,54 @@ Help() {
 	echo "v		Versão do projeto com apenas 1 ponto flutuante. 1.0,1.2, etc."
 	echo "p 	Porta exposta pela máquina host"
 	echo "c 	Porta exposta pelo container, disponivel apenas localmente. Para acesso das demais aplicações"
+	echo "w		Nome da rede do container"
+	echo "i 	Ip que o container terá na rede"
+	echo "l		Comando de volume para o container"
+	echo "f		Pasta que o projeto está localizado"
+	echo "r 	Opção de run do script, b(uildar) ou (c)ompilado"
+	echo "y		Para ignorar a confirmação da execução do docker run"
 	echo
-	echo "exemplo: $ ./selfrun.sh -n ProjetoInteressante  -p 9099 -c 5001 -v 1.0"
+	echo "exemplo: $ ./selfrun.sh -y -n NomeProjeto -f PastaProjeto -v 2.5 -p 9099 -c 5001 -w redeinteressante -i 127.17.0.5 -r b"
 }
 
 Validate_arguments() {
 	ERROR=0
-	if [ "${APPNAME}" == "" ]; then
-		echo "Project -(n)ame required!"
+	if [ "$APPNAME" == "" ]; then
+		echo "(n)ome do projeto necessário!"
 		ERROR=1
 	fi
 
-	if [ "${NET}" != "" ] && [ "${IP}" == "" ] | [ "${IP}" != ""] && [ "${NET}" == "" ]
+	if ([ "$NET" != "" ] && [ "$IP" == "" ]) || ([ "$IP" != "" ] && [ "$NET" == "" ])
 	then
-		echo "missing full network options [-net(w)ork name OR -(i)p]"
+		echo "Opções de rede incompletas [-net(w)ork OU -(i)p]"
 		ERROR=1
 	fi
 	
 	if [ "${PROJECTFOLDER}" == "" ]; then
-		echo "Project -(f)older required!"
+		echo "(f)Pasta necessária!"
 		ERROR=1
 	fi
 
 	if [ "${RUNOPTION}" == "" ];then
-		echo "(r)un option required!"	
+		echo "Opção (r)un necessária!"
+		ERROR=1
 	fi
 
 	if [ "${RUNOPTION}" != "" ] && [ "${RUNOPTION}" != "b" ] && [ "${RUNOPTION}" != "c" ]; then
-		echo "(r)un option precisa ser 'b' ou 'c'"
+		echo "Opção (r)un precisa ser 'b' ou 'c'"
 		ERROR=1
 	fi
 
 	if [ $ERROR -eq 1 ]; then
-		echo "ERROR: exit with code 1"
+		echo -e "${RED}ERROR:${DEFAULT} exit with code 1"
 		exit 1
 	fi
-
-
 }
 
 Build_and_run() {
-	LOWERNAME=${APPNAME}
+	LOWERNAME=$APPNAME
 	LOWERNAME=$(echo $LOWERNAME | tr '[:upper:]' '[:lower:]')
-	IMAGENAME=transpnet/$LOWERNAME:$VERSION
+	IMAGENAME=transpnet/$LOWERNAME:${VERSION}
 	CONTAINERNAME=$LOWERNAME-container
 	echo "+--------------+"
 	echo "Nome da aplicação: $APPNAME"
@@ -76,42 +84,64 @@ Build_and_run() {
 	chmod +x dockerfile-generator.sh
 
 	./dockerfile-generator.sh -f $PROJECTFOLDER -n $APPNAME -$RUNOPTION
-
-	if [ "$VOLUME" == "" ]
+	
+#	docker build -t $IMAGENAME
+	
+	if [ "${VOLUME}" == "" ]
 	then
-		echo "INFO: Nenhum volume especificado"
+		echo -e "${BLUE}INFO:${DEFAULT} Nenhum volume especificado"
+	else
+		volume="-v $VOLUME"
 	fi
-	if [ "$NET" == "" ]
+
+
+	if [ "${NET}" == "" ]
 	then
-		echo "INFO: Nenhuma rede especificada"
+		echo "${BLUE}INFO:${DEFAULT} Nenhuma rede especificada"
+	else
+		network="--net $NET --ip $IP"
 	fi
 
-	# docker run -td --net nomedanet --ip 127.21.0.69 -v $(pwd)/Volume:/app/Arquivos --name $CONTAINERNAME -p $PORTHOST:$PORTCONTAINER --restart unless-stopped $IMAGENAME
+	echo "O comando que será executado é este:"
+	echo "docker run -td $network $volume --name $CONTAINERNAME -p $HOSTPORT:$CONTAINERPORT --restart unless-stopped $IMAGENAME"
 
-	# docker build -t #IMAGENAME
+	if [ "${CONFIRMATION}" != "y" ]
+	then
+		read -r -p "Tem certeza que deseja rodar? [y/N] " response
+		if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
+		then
+			docker run -td $network $volume --name $CONTAINERNAME -p $HOSTPORT:$CONTAINERPORT --restart unless-stopped $IMAGENAME
+		else
+			echo "O comando não foi executado"
+			exit 1
+		fi
+	fi
 
 }
 
 main() {
-	Default_values
+
 	Validate_arguments
 	Build_and_run
 }
 
-while getopts hn:v:p:c:w:i:l:f:r: flags
+Default_values
+
+while getopts hyn:v:p:c:w:i:l:f:r: flags
 do
 	case "${flags}" in
 		h) 	Help
 			exit;;
 		n) eval APPNAME=\"${OPTARG}\";;
-		v) VERSION=${OPTARG};;
-		p) HOSTPORT=${OPTARG};;
-		c) CONTAINERPORT=${OPTARG};;
-		w) NET=${OPTARG};;
-		i) IP=${OPTARG};; 
-		l) VOLUME=${OPTGARG};;
-		f) PROJECTFOLDER=${OPTARG};;
-		r) RUNOPTION=${OPTARG};;
+		v) eval VERSION=\"${OPTARG}\";;
+		p) eval HOSTPORT=\"${OPTARG}\";;
+		c) eval CONTAINERPORT=\"${OPTARG}\";;
+		w) eval NET=\"${OPTARG}\";;
+		i) eval IP=\"${OPTARG}\";; 
+		l) eval VOLUME=\"${OPTARG}\";;
+		f) eval PROJECTFOLDER=\"${OPTARG}\";;
+		r) eval RUNOPTION=\"${OPTARG}\";;
+		y) eval CONFIRMATION=y;;
 
 	esac
 done
