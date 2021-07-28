@@ -1,5 +1,3 @@
-FOLDERNAME=1
-PROJECTNAME=1
 DOTNETVERSION=5.0
 
 
@@ -26,14 +24,14 @@ Dockerfile-dotnet-runtime() {
 		echo $first_line > Dockerfile
 	fi
 	
-	echo "WORLDIR /app" >> Dockerfile
+	echo "WORKDIR /app" >> Dockerfile
 #	echo "COPY $PROJECTOFOLDER/DatabBase/CodeStored.db /apt/CodeStored.db" >> Dockerfile
 	
 	if [ "$is_build" -eq "1" ]
 	then
 		echo "COPY --from=build /app ./" >> Dockerfile
 	else
-		echo "COPY ./app ./" >> Dockerfile
+		echo "COPY ./$PROJECTFOLDER ./" >> Dockerfile
 	fi
 
 	echo " " >> Dockerfile
@@ -47,7 +45,7 @@ Dockerfile-dotnet-runtime() {
 
 
 Dockerfile-dotnet-build() {
-	echo "FROM mcr.microsoft.com/dotnet/sdl:$DOTNETVERSION AS build" > Dockerfile
+	echo "FROM mcr.microsoft.com/dotnet/sdk:$DOTNETVERSION AS build" > Dockerfile
 	echo "WORKDIR /source" >> Dockerfile
 
 	echo " " >> Dockerfile
@@ -64,7 +62,7 @@ Dockerfile-dotnet-build() {
 	echo " " >> Dockerfile
 
 	echo "COPY $PROJECTFOLDER/. ./$PROJECTFOLDER/" >> Dockerfile
-	echo "wORKDIR /source/$PROJECTFOLDER" >> Dockerfile
+	echo "WORKDIR /source/$PROJECTFOLDER" >> Dockerfile
 	echo "RUN dotnet publish -c release -o /app" >> Dockerfile
 
 	echo " " >> Dockerfile

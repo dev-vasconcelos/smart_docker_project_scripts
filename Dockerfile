@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdl:5.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build
 WORKDIR /source
  
 COPY PastaProjeto/* ./
@@ -9,11 +9,11 @@ RUN ln -fs /usr/share/zoneinfo/America/Sao_Paulo /etc/localtime
 RUN dpkg-reconfigure --frontend noninteractive tzdata
  
 COPY PastaProjeto/. ./PastaProjeto/
-wORKDIR /source/PastaProjeto
+WORKDIR /source/PastaProjeto
 RUN dotnet publish -c release -o /app
  
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
-WORLDIR /app
+WORKDIR /app
 COPY --from=build /app ./
  
 ENTRYPOINT ["dotnet","NomeProjeto.dll"]

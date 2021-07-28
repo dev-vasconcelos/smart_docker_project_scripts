@@ -29,6 +29,7 @@ Help() {
 	echo "y		Para ignorar a confirmação da execução do docker run"
 	echo
 	echo "exemplo: $ ./selfrun.sh -y -n NomeProjeto -f PastaProjeto -v 2.5 -p 9099 -c 5001 -w redeinteressante -i 127.17.0.5 -r b"
+	echo
 }
 
 Validate_arguments() {
@@ -60,7 +61,9 @@ Validate_arguments() {
 	fi
 
 	if [ $ERROR -eq 1 ]; then
+		echo
 		echo -e "${RED}ERROR:${DEFAULT} exit with code 1"
+		echo
 		exit 1
 	fi
 }
@@ -70,11 +73,13 @@ Build_and_run() {
 	LOWERNAME=$(echo $LOWERNAME | tr '[:upper:]' '[:lower:]')
 	IMAGENAME=transpnet/$LOWERNAME:${VERSION}
 	CONTAINERNAME=$LOWERNAME-container
+	echo
 	echo "+--------------+"
 	echo "Nome da aplicação: $APPNAME"
 	echo "Nome da imagem: $IMAGENAME"
 	echo "Nome do container: $CONTAINERNAME"
 	echo "+--------------+"
+	echo
 	##
 	# Add backup routine option
 	##
@@ -89,7 +94,9 @@ Build_and_run() {
 	
 	if [ "${VOLUME}" == "" ]
 	then
+		echo
 		echo -e "${BLUE}INFO:${DEFAULT} Nenhum volume especificado"
+		echo
 	else
 		volume="-v $VOLUME"
 	fi
@@ -97,16 +104,19 @@ Build_and_run() {
 
 	if [ "${NET}" == "" ]
 	then
+		echo
 		echo "${BLUE}INFO:${DEFAULT} Nenhuma rede especificada"
+		echo
 	else
 		network="--net $NET --ip $IP"
 	fi
 
-	echo "O comando que será executado é este:"
+	echo "Comando a ser executado "
 	echo "docker run -td $network $volume --name $CONTAINERNAME -p $HOSTPORT:$CONTAINERPORT --restart unless-stopped $IMAGENAME"
-
+	
 	if [ "${CONFIRMATION}" != "y" ]
 	then
+		echo
 		read -r -p "Tem certeza que deseja rodar? [y/N] " response
 		if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 		then
