@@ -84,13 +84,13 @@ Build_and_run() {
 	# Add backup routine option
 	##
 
-	# docker rm -f $CONTAINERNAME
+	docker rm -f $CONTAINERNAME
 
 	chmod +x dockerfile-generator.sh
 
 	./dockerfile-generator.sh -f $PROJECTFOLDER -n $APPNAME -$RUNOPTION
 	
-#	docker build -t $IMAGENAME
+	docker build . -t $IMAGENAME
 	
 	if [ "${VOLUME}" == "" ]
 	then
@@ -105,7 +105,7 @@ Build_and_run() {
 	if [ "${NET}" == "" ]
 	then
 		echo
-		echo "${BLUE}INFO:${DEFAULT} Nenhuma rede especificada"
+		echo -e "${BLUE}INFO:${DEFAULT} Nenhuma rede especificada"
 		echo
 	else
 		network="--net $NET --ip $IP"
@@ -125,6 +125,8 @@ Build_and_run() {
 			echo "O comando não foi executado"
 			exit 1
 		fi
+	else
+		docker run -td $network $volume --name $CONTAINERNAME -p $HOSTPORT:$CONTAINERPORT --restart unless-stopped $IMAGENAME
 	fi
 
 }
