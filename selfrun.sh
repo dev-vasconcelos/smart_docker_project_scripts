@@ -142,9 +142,22 @@ Build_and_run() {
 
 	chmod +x dockerfile-generator.sh
 
-	./dockerfile-generator.sh -f $PROJECTFOLDER -n $APPNAME -$RUNOPTION
+	if ! ./dockerfile-generator.sh -f $PROJECTFOLDER -n $APPNAME -$RUNOPTION
+	then
+		echo
+		echo -e "${RED}ERROR:${DEFAULT} Erro ao gerar dockerfile!"
+		echo
+		exit 1
+	fi	
 	
-	docker build . -t $IMAGENAME
+	
+	if ! docker build . -t $IMAGENAME
+	then
+		echo
+		echo -e "${RED}ERROR:${DEFAULT} Erro ao buildar dockerfile!"
+		echo
+		exit 1
+	fi
 	
 	if [ "${VOLUME}" == "" ]
 	then
@@ -167,7 +180,9 @@ Build_and_run() {
 	fi
 
 	echo "Comando a ser executado "
-	echo "docker run -td $network $volume --name $CONTAINERNAME -p $HOSTPORT:$CONTAINERPORT --restart unless-stopped $IMAGENAME"
+
+	execcommand="docker run -td $network $volume --name $CONTAINERNAME -p $HOSTPORT:$CONTAINERPORT --restart unless-stopped $IMAGENAME"
+	echo $execcommand
 	
 	if [ "${CONFIRMATION}" != "y" ]
 	then
@@ -175,13 +190,23 @@ Build_and_run() {
 		read -r -p "Tem certeza que deseja rodar? [y/N] " response
 		if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 		then
-			docker run -td $network $volume --name $CONTAINERNAME -p $HOSTPORT:$CONTAINERPORT --restart unless-stopped $IMAGENAME
+			if ! ${execcommand} 
+			then
+				echo
+				echo -e "${RED}ERROR:${DEFAULT} Falha ao rodar o container"
+				echo		
+			fi
 		else
-			echo "O comando não foi executado"
+			echo "O comando não será executado"
 			exit 1
 		fi
 	else
-		docker run -td $network $volume --name $CONTAINERNAME -p $HOSTPORT:$CONTAINERPORT --restart unless-stopped $IMAGENAME
+		if ! ${execcommand} 
+		then
+			echo
+			echo -e "${RED}ERROR:${DEFAULT} Falha ao rodar o container"
+			echo		
+		fi
 	fi
 
 }
