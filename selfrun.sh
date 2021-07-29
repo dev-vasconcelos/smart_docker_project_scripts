@@ -68,6 +68,60 @@ Validate_arguments() {
 	fi
 }
 
+check_network() {
+	network_name=$1
+	ip_container=$2
+	
+	IFS="." read -a sep <<< "$ip_container"
+
+	if docker network inspect $network_name
+	then
+		for i in ${sep[@]}
+		do
+			if [ "$i" -lt "0" ] || [ "$i" -gt "255" ]
+			then
+				echo -e "${RED}ERROR:${DEFUALT} Ip inválido, fora do range"
+				exit 1
+			fi
+		done	
+	else
+		echo "rede nao existe"
+		
+		
+		
+		for i in ${sep[@]}; do
+			if [ "$i" -gt "255" ] || [ "$i" -lt  "0" ]
+			then 
+				echo -e "${RED}ERROR:${DEFUALT} rede inválida, verifique os ips"
+				echo -e "${RED}ERROR:${DEFAULT} exit with code 1"
+				exit 1
+			fi
+		done
+			
+		if [ "${sep[0]}" -gt "0" ] && [ "${sep[0]}" -le "10" ]
+		then
+			subnet=${sep[0]}.${sep[1]}.0.0/8
+		
+		elif [ "${sep[0]}" -gt "10" ] && [ "${sep[0]}" -le 172 ]
+		then
+			subnet=${sep[0]}.${sep[1]}.0.0/12
+		
+		elif [ "${sep[0]}" -gt "0" ] && [ "${sep[0]}" -le  255 ]
+		then
+			subnet=${sep[0]}.${sep[1]}.0.0/16
+		fi
+			
+		if docker network create --subnet=$subnet $network_name
+		then
+			echo "Rede $network_name criada"
+		else
+			echo -e "${RED}ERROR:${DEFAULT} erro ao criar rede"
+			exit 1
+		fi
+	fi	
+	
+}
+
 Build_and_run() {
 	LOWERNAME=$APPNAME
 	LOWERNAME=$(echo $LOWERNAME | tr '[:upper:]' '[:lower:]')
@@ -108,6 +162,7 @@ Build_and_run() {
 		echo -e "${BLUE}INFO:${DEFAULT} Nenhuma rede especificada"
 		echo
 	else
+		check_network $NET $IP 
 		network="--net $NET --ip $IP"
 	fi
 
