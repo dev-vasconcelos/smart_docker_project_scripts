@@ -6,7 +6,7 @@ RED='\033[0;31m'
 BLUE='\033[0;34m'
 DEFAULT='\033[0m'
 
-Default_values() {
+default_values() {
 	CONTAINERPORT=8080
 	HOSTPORT=8080
 	VERSION=1.0
@@ -32,7 +32,7 @@ Help() {
 	echo
 }
 
-Validate_arguments() {
+validate_arguments() {
 	ERROR=0
 	if [ "$APPNAME" == "" ]; then
 		echo "(n)ome do projeto necessário!"
@@ -85,9 +85,6 @@ check_network() {
 			fi
 		done	
 	else
-		echo "rede nao existe"
-		
-		
 		
 		for i in ${sep[@]}; do
 			if [ "$i" -gt "255" ] || [ "$i" -lt  "0" ]
@@ -111,10 +108,9 @@ check_network() {
 			subnet=${sep[0]}.${sep[1]}.0.0/16
 		fi
 			
-		if docker network create --subnet=$subnet $network_name
+		if ! docker network create --subnet=$subnet $network_name
 		then
-			echo "Rede $network_name criada"
-		else
+			echo -e "${RED}ERRPR:${DEFAULT} comando errado: docker network create --subnet=$subnet $network_name"
 			echo -e "${RED}ERROR:${DEFAULT} erro ao criar rede"
 			exit 1
 		fi
@@ -122,7 +118,7 @@ check_network() {
 	
 }
 
-Build_and_run() {
+build_and_run() {
 	LOWERNAME=$APPNAME
 	LOWERNAME=$(echo $LOWERNAME | tr '[:upper:]' '[:lower:]')
 	IMAGENAME=transpnet/$LOWERNAME:${VERSION}
@@ -179,15 +175,14 @@ Build_and_run() {
 		network="--net $NET --ip $IP"
 	fi
 
-	echo "Comando a ser executado "
 
 	execcommand="docker run -td $network $volume --name $CONTAINERNAME -p $HOSTPORT:$CONTAINERPORT --restart unless-stopped $IMAGENAME"
-	echo $execcommand
+	echo "Comando a ser executado: $execcommand"
 	
 	if [ "${CONFIRMATION}" != "y" ]
 	then
 		echo
-		read -r -p "Tem certeza que deseja rodar? [y/N] " response
+		read -r -p "Confirmar execução [y/N] " response
 		if [[ "$response" =~ ^([yY][eE][sS]|[yY])$ ]]
 		then
 			if ! ${execcommand} 
@@ -212,12 +207,11 @@ Build_and_run() {
 }
 
 main() {
-
-	Validate_arguments
-	Build_and_run
+	validate_arguments
+	build_and_run
 }
 
-Default_values
+default_values
 
 while getopts hyn:v:p:c:w:i:l:f:r: flags
 do

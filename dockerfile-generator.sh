@@ -14,7 +14,7 @@ Help() {
 	echo "não utilize as opções -b e -c simultaneamente!"
 }
 
-Dockerfile-dotnet-runtime() {
+dockerfile-dotnet-runtime() {
 	is_build=$1
 	first_line="FROM mcr.microsoft.com/dotnet/aspnet:$DOTNETVERSION"
 	if [ "$is_build" -eq  "1" ]	
@@ -44,7 +44,7 @@ Dockerfile-dotnet-runtime() {
 
 
 
-Dockerfile-dotnet-build() {
+dockerfile-dotnet-build() {
 	echo "FROM mcr.microsoft.com/dotnet/sdk:$DOTNETVERSION AS build" > Dockerfile
 	echo "WORKDIR /source" >> Dockerfile
 
@@ -67,7 +67,7 @@ Dockerfile-dotnet-build() {
 
 	echo " " >> Dockerfile
 
-	Dockerfile-dotnet-runtime 1
+	dockerfile-dotnet-runtime 1
 }
 
 while getopts bchn:f: flags
@@ -78,10 +78,10 @@ do
 		f) PROJECTFOLDER=${OPTARG};;
 		n) PROJECTNAME=${OPTARG};;
 		b) 
-			Dockerfile-dotnet-build
+			dockerfile-dotnet-build
 			exit;;
 		c) 
-			Dockerfile-dotnet-runtime 0
+			dockerfile-dotnet-runtime 0
 			exit;;
 	esac
 done
