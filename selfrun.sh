@@ -15,7 +15,7 @@ default_values() {
 Help() {
 	echo "Como rodar o projeto"
 	echo
-	echo "Syntax? selfrun [-n|v|p|c]"
+	echo "Syntax? selfrun [-n|v|p|c|w|i|l|f|r|y]"
 	echo "options:"
 	echo "n		Nome do Projeto, inicial maiscula, como a DLL gerada"
 	echo "v		Versão do projeto com apenas 1 ponto flutuante. 1.0,1.2, etc."
@@ -28,7 +28,7 @@ Help() {
 	echo "r 	Opção de run do script, b(uildar) ou (c)ompilado"
 	echo "y		Para ignorar a confirmação da execução do docker run"
 	echo
-	echo "exemplo: $ ./selfrun.sh -y -n NomeProjeto -f PastaProjeto -v 2.5 -p 9099 -c 5001 -w redeinteressante -i 127.17.0.5 -r b"
+	echo "exemplo: $ ./selfrun.sh -y -n NomeProjeto -f PastaProjeto -v 2.5 -p 9099 -c 5001 -w redeinteressante -i 175.21.0.5 -r b"
 	echo
 }
 
