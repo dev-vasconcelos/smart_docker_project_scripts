@@ -19,7 +19,6 @@ docker volume inspect $volume_name
 ## docker volume rm $volume_name
 # docker volume rm volumeinteressante
 
-echo 'algo'
 docker run -td --name $container_name -v ${volume_name}:$path_to_folder $image
 # docker run -td --name container1 -v volumescript:/app ubuntu
 
