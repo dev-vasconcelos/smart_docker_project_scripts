@@ -1,24 +1,24 @@
 #! /bin/bash
+FILEPATH=$(pwd)/teste.conf
 
-#<VirtualHost *:*>
-#	RequestHeader set "X-Forwarded-Proto" expr=%{REQUEST_SCHEME}
-#</VirtualHost>
+echo "#<VirtualHost *:*>" > $FILEPATH
+echo "#	RequestHeader set "X-Forwarded-Proto" expr=%{REQUEST_SCHEME}" >> $FILEPATH
+echo "#</VirtualHost>" >> $FILEPATH
 
 ## Default for each application##
-
+domain="track.transp.net"
+doc_root_path="/var/www/html/Track"
 ## view page ##
-domain=track.transp.net
-document_root= /var/www/html/Track
-<VirtualHost *:80>
-	ServerName $domain
-	ServerAlias www.$domain
+echo 	"<VirtualHost *:80>" >> $FILEPATH
+echo 	"	ServerName $domain" >> $FILEPATH
+echo	"	ServerAlias www.$domain" >> $FILEPATH
+echo >> $FILEPATH
+echo	"	DocumentRoot $doc_root_path" >> $FILEPATH
+echo	"	ErrorLog ${APACHE_LOG_DIR}/error.log" >> $FILEPATH
+echo	"	CustomLog ${APACHE_LOG_DIR}/access.log combined" >> $FILEPATH ## SETAR APACHE_LOG_DIR NO SISTEMA
+echo	"</VirtualHost>" >> $FILEPATH
 
-	DocumentRoot $document_root
-	ErrorLog ${APACHE_LOG_DIR}/error.log
-	CustomLog ${APACHE_LOG_DIR}/access.log combined
-</VirtualHost>
-
-# vim: syntax=apache ts=4 sw=4 sts=4 sr noet
+echo	"# vim: syntax=apache ts=4 sw=4 sts=4 sr noet" >> $FILEPATH
 
 domain="gateway.transp.net"
 default_path="/" #default
@@ -31,29 +31,29 @@ proxy_requests="off" #default
 ssl_proxy_engine="on" #default
 vhost_port="80" #default
 vhost_sec_port="443" #default
-<VirtualHost *:$vhost_port>
-	ProxyPreserveHost $proxy_preserve_host
-	ProxyRequests $proxy_requests
-	ServerName $domain
-	ServerAlias www.$domain
-	ProxyPass $default_path $addr_referenced
-	ProxyPassReverse $path #addr_referenced
-	
-	# ex path ProxyPass /swagger http://127.0.0.1:5010/
-	# ex path ProxPassReverse /swagger http://127.0.0.1:5010/
-</VirtualHost>
 
-<VirtualHost *.$vhost_sec_port>
-	ProxyPreserveHost $proxy_preserve_host
-	ProxyRequests $proxy_requests
-	#ServerName $domain
-	$ServerAlias www.$domain
-	SSLProxyEngine $ssl_proxy_engine
-	SSLCertificatefile /etc/apache2/ssl/$cert_relative_path
-	SSLCertificateKeyFile /etc/apache2/ssl/$key_relative_path
-	SSLCertificateChainFile /etc/apache2/ssl/$chain_relative_path
-	
-	ProxyPass $default_path $addr_referenced 
-	ProxyPassReverse $default_path $addr_references
-	
-</VirtualHost>
+echo	"<VirtualHost *:$vhost_port>" >> $FILEPATH
+echo	"	ProxyPreserveHost $proxy_preserve_host" >> $FILEPATH
+echo	"	ProxyRequests $proxy_requests" >> $FILEPATH
+echo	"	ServerName $domain" >> $FILEPATH
+echo	"	ServerAlias www.$domain" >> $FILEPATH
+echo	"	ProxyPass $default_path $addr_referenced" >> $FILEPATH
+echo	"	ProxyPassReverse $path $addr_referenced" >> $FILEPATH
+echo >> $FILEPATH	
+echo	"	# ex path ProxyPass /swagger http://127.0.0.1:5010/" >> $FILEPATH
+echo	"	# ex path ProxPassReverse /swagger http://127.0.0.1:5010/" >> $FILEPATH
+echo	"</VirtualHost>" >> $FILEPATH
+echo >> $FILEPATH
+echo	"<VirtualHost *.$vhost_sec_port>" >> $FILEPATH
+echo	"	ProxyPreserveHost $proxy_preserve_host" >> $FILEPATH
+echo	"	ProxyRequests $proxy_requests" >> $FILEPATH
+echo	"	#ServerName $domain" >> $FILEPATH
+echo	"	#ServerAlias www.$domain" >> $FILEPATH
+echo	"	SSLProxyEngine $ssl_proxy_engine" >> $FILEPATH
+echo	"	SSLCertificatefile /etc/apache2/ssl/$cert_relative_path" >> $FILEPATH
+echo	"	SSLCertificateKeyFile /etc/apache2/ssl/$key_relative_path" >> $FILEPATH
+echo	"	SSLCertificateChainFile /etc/apache2/ssl/$chain_relative_path" >> $FILEPATH
+echo >> $FILEPATH
+echo	"	ProxyPass $default_path $addr_referenced " >> $FILEPATH
+echo	"	ProxyPassReverse $default_path $addr_referenced" >> $FILEPATH
+echo	"</VirtualHost>" >> $FILEPATH
