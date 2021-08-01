@@ -16,9 +16,9 @@ projeto() {
 
 	if [ -z $nome_projeto ]; then nome_projeto=$project_folder; fi
 
-	if [ -z "$workspace" ]; then path=$DEFAULTPROJECTFOLDER/;workspace=$DEFAULTPROJECTFOLDER; fi
+	if [ -z "$workspace" ]; then workspace=$DEFAULTPROJECTFOLDER; fi
 	
-	if [ ! -z $project_folder ]; then path+=$project_folder/; else project_folder=$nome_projeto; path+=$nome_projeto/; fi
+	if [ ! -z $project_folder ]; then path=$workspace/$project_folder/; else project_folder=$nome_projeto; path=$workspace/$nome_projeto/; fi
 	
 	case "${funcao}" in
 		"rodar") docker_selfrun $project_folder $path;;
