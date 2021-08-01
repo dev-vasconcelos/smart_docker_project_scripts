@@ -1,3 +1,4 @@
+#apenas editando para testar o bashrc
 volume_name=volumescript
 container_name=containerscript1
 path_to_tolder=/app
