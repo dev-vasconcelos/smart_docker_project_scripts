@@ -12,6 +12,18 @@ default_values() {
 	VERSION=1.0
 }
 
+print_all_vars() {
+echo $APPNAME
+echo $VERSION
+echo $HOSTPORT
+echo $CONTAINERPORT
+echo $NET
+echo $IP
+echo $VOLUME
+echo $RUNOPTION
+echo $CONFIRMATION
+}
+
 Help() {
 	echo "Como rodar o projeto"
 	echo
@@ -28,9 +40,31 @@ Help() {
 	echo "r 	Opção de run do script, b(uildar) ou (c)ompilado"
 	echo "y		Para ignorar a confirmação da execução do docker run"
 	echo
+	echo "Se quiser rodar por um json de configurações do projeto, apenas crie um arquivo docker.json"
+	echo "e execute: $ ./selfrun.sh -f PastaProjeto -j"
+	echo
 	echo "exemplo: $ ./selfrun.sh -y -n NomeProjeto -f PastaProjeto -v 2.5 -p 9099 -c 5001 -w redeinteressante -i 175.21.0.5 -r b"
 	echo
 }
+
+get_json_values() {
+	docker_json_path=$PROJECTFOLDER/docker.json
+	
+	APPNAME=$(grep -Po '"appname": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
+	VERSION=$(grep -Po '"version": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
+	HOSTPORT=$(grep -Po '"hostport": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
+	CONTAINERPORT=$(grep -Po '"containerport": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
+	NET=$(grep -Po '"net": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
+	IP=$(grep -Po '"ip": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
+	# RUNTOPTION=$(gerp -Po '"runoption": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
+	VOLUME=$(grep -Po '"volume": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
+	RUNOPTION=$(grep -Po '"runoption": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
+	CONFIRMATION=$(grep -Po '"confirmation": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
+
+	print_all_vars
+}
+
+
 
 validate_arguments() {
 	ERROR=0
@@ -56,6 +90,7 @@ validate_arguments() {
 	fi
 
 	if [ "${RUNOPTION}" != "" ] && [ "${RUNOPTION}" != "b" ] && [ "${RUNOPTION}" != "c" ]; then
+		echo $RUNOPTION
 		echo "Opção (r)un precisa ser 'b' ou 'c'"
 		ERROR=1
 	fi
@@ -213,11 +248,14 @@ main() {
 
 default_values
 
-while getopts hyn:v:p:c:w:i:l:f:r: flags
+while getopts hjyn:v:p:c:w:i:l:f:r: flags
 do
 	case "${flags}" in
 		h) 	Help
 			exit;;
+		j) 	get_json_values
+			break;;
+
 		n) eval APPNAME=\"${OPTARG}\";;
 		v) eval VERSION=\"${OPTARG}\";;
 		p) eval HOSTPORT=\"${OPTARG}\";;
@@ -230,5 +268,6 @@ do
 		y) eval CONFIRMATION=y;;
 
 	esac
+	
 done
 main
