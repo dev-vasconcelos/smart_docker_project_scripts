@@ -1,4 +1,4 @@
-DEFAULTPROJECTFOLDER="/home/predogalahad/Documents/Projects"
+DEFAULTPROJECTFOLDER="/home/predo/Projects"
 
 projeto() {
 	funcao=$1
@@ -21,7 +21,7 @@ projeto() {
 	if [ ! -z $project_folder ]; then path=$workspace/$project_folder/; else project_folder=$nome_projeto; path=$workspace/$nome_projeto/; fi
 	
 	case "${funcao}" in
-		"rodar") docker_selfrun $project_folder $path;;
+			"rodar") docker_selfrun $project_folder $path;;
 		"deploy") git -C $path pull; docker_selfrun $project_folder $path;;
 		"atualizar") git -C $path pull;;
 		"status") git -C $path status;;
@@ -37,11 +37,31 @@ projeto() {
 	# git_handler $funcao $nome_projeto $path $branch
 }
 
+## tentar depois arrumar como funcao
+_projeto() {
+	local cur
+  	COMPREPLY=()   # Array variable storing the possible completions.
+  	cur=${COMP_WORDS[COMP_CWORD]}
+
+  	case "$cur" in
+		-*)
+    			COMPREPLY=( $( compgen -W '-f -n -w -b -o -h --funcao --nome \
+                               --workspace --branch --folder --help --' -- $cur ) );;
+
+  	esac	
+
+}
+
+
+complete -W "-f -n -w -b -o -h \
+	--funcao --nome --workspace --branch --folder --help \
+	rodar deploy atualizar status checkout \
+        $(ls $DEFAULTPROJECTFOLDER)" projeto
+
 docker_selfrun() {
 	project_folder=$1
 	path=$2
-	echo $project_folder
-	echo $path
+	
 	if [ "$workspace" == "$DEFAULTPROJECTFOLDER" ]; then
 		cd $DEFAULTPROJECTFOLDER && ./selfrun.sh -f $project_folder -j
 	else
