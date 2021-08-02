@@ -93,10 +93,9 @@ validate_arguments() {
 		ERROR=1
 	fi
 
-	if [ $ERROR -eq 1 ]; then
+	if [ "$ERROR" -eq 1 ]; then
 		echo
 		echo -e "${RED}ERROR:${DEFAULT} exit with code 1"
-		echo
 		exit 1
 	fi
 }
@@ -152,6 +151,7 @@ check_network() {
 }
 
 build_and_run() {
+	# trap "echo parando build and run; exit"INT
 	LOWERNAME=$APPNAME
 	LOWERNAME=$(echo $LOWERNAME | tr '[:upper:]' '[:lower:]')
 	IMAGENAME=transpnet/$LOWERNAME:${VERSION}
@@ -233,13 +233,15 @@ build_and_run() {
 		then
 			echo
 			echo -e "${RED}ERROR:${DEFAULT} Falha ao rodar o container"
-			echo		
+			echo
+			exit 1		
 		fi
 	fi
 
 }
 
 main() {
+	
 	validate_arguments
 	build_and_run
 }
@@ -268,4 +270,6 @@ do
 	esac
 	
 done
+
+trap "exit" INT
 main
