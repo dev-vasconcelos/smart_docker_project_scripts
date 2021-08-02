@@ -1,4 +1,4 @@
-DEFAULTPROJECTFOLDER="$(echo ~)/Documents/Projects"
+DEFAULTPROJECTFOLDER="$(echo ~)/Projects"
 
 projeto() {(
 	functions_absolute_path="$(echo ~)/phandler_function.sh"
