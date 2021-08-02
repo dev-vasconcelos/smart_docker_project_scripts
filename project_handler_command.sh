@@ -28,6 +28,12 @@ projeto() {
 		"checkout") git -C $path checkout $branch
 	esac
 
+	unset funcao
+	unset nome_projeto
+	unset workspace
+	unset branch
+	unset project_folder
+
 	# git_handler $funcao $nome_projeto $path $branch
 }
 
