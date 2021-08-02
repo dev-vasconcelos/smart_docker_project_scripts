@@ -60,8 +60,6 @@ get_json_values() {
 	VOLUME=$(grep -Po '"volume": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
 	RUNOPTION=$(grep -Po '"runoption": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
 	CONFIRMATION=$(grep -Po '"confirmation": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
-
-	print_all_vars
 }
 
 
