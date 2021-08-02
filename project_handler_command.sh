@@ -1,4 +1,4 @@
-DEFAULTPROJECTFOLDER="/home/predo/Projects"
+DEFAULTPROJECTFOLDER="/home/predogalahad/Documents/Projects"
 
 projeto() {
 	funcao=$1
