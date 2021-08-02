@@ -50,6 +50,13 @@ $ phandler atualizar $projeto0 $projeto1 $projeto2
 | status | Realiza o git status no projeto |
 | checkout | Realiza o git checkout no projeto |
 
+### Banco de Dados
+| Função | Descrição |
+| ------ | ------ |
+| `sql` | Entra no postgres do container |
+| `dump` | Realiza a exportação do banco |
+| `import` | Realiza a importação de um bd |
+
 ### Parâmetros
 Você também pode utilizar os paramêtros caso queria especificar mais
 
