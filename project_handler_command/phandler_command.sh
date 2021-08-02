@@ -30,6 +30,7 @@ projeto() {(
 			"atualizar") git -C $path pull;;
 			"status") git -C $path status;;
 			"checkout") git -C $path checkout $branch;;
+			"diff") git -C $path diff;;
 			"up") git_up $path;;
 			*) echo "Funcao não encontrada! Fechando!"; teste;break;;
 		esac
