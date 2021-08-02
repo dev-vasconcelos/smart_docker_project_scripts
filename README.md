@@ -1,8 +1,6 @@
 # Dotnet e Docker
 ## _Tudo que pode ser automatizado, deve ser_
 
-[![N|Solid](https://cldup.com/dTxpPi9lDf.thumb.png)](https://nodesource.com/products/nsolid)
-
 Conjunto de scripts para se trabalhar com dotnet, postgres e docker de maneira fácil
 - Comando linux para se trabalhar em qualquer projeto de qualquer lugar
 - Scripts de referência para criar mais scripts ou comandos
