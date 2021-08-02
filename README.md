@@ -53,9 +53,9 @@ $ phandler atualizar $projeto0 $projeto1 $projeto2
 ### Banco de Dados
 | Função | Descrição |
 | ------ | ------ |
-| `sql` | Entra no postgres do container |
-| `dump` | Realiza a exportação do banco |
-| `import` | Realiza a importação de um bd |
+| `sql` | Entra no postgres do projeto |
+| `dump` | Realiza a exportação do banco referente ao projeto |
+| `import` | Realiza a importação de um DB para o banco referente ao projeto |
 
 ### Parâmetros
 Você também pode utilizar os paramêtros caso queria especificar mais
