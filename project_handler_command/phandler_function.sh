@@ -20,10 +20,20 @@ docker_selfrun() {
 
 git_up() {
 	branch=$(git -C $path symbolic-ref --short HEAD)
+	
 	git -C $path add .
-		read -r -p "Entre a mensagem de commit: " message
+	read -r -p "Entre a mensagem de commit: " message
 	git -C $path commit -m "$message"
-		read -r -p "Confirmar commi no brach $branch [y/N]" confirm
+	
+	if [[ $(git -C $path status) == *"Your branch is up to date"* ]]
+	then 
+		echo "Não há nada a ser commitado"
+		exit 0
+       	fi
+
+	read -r -p "Confirmar commit no brach $branch [y/N]" confirm
+	
+		
 	echo $confirm
 
 	if [[ "$confirm" =~ ^([yY][eE][sS]|[yY])$ ]]
