@@ -22,6 +22,7 @@ echo $IP
 echo $VOLUME
 echo $RUNOPTION
 echo $CONFIRMATION
+echo $DOTNETVERSION
 }
 
 Help() {
@@ -60,6 +61,8 @@ get_json_values() {
 	VOLUME=$(grep -Po '"volume": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
 	RUNOPTION=$(grep -Po '"runoption": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
 	CONFIRMATION=$(grep -Po '"confirmation": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
+	DOTNETVERSION=$(grep -Po '"dotnetversion": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
+
 }
 
 
@@ -170,8 +173,8 @@ build_and_run() {
 	docker rm -f $CONTAINERNAME
 
 	chmod +x dockerfile-generator.sh
-
-	if ! ./dockerfile-generator.sh -f $PROJECTFOLDER -n $APPNAME -$RUNOPTION
+	
+	if ! ./dockerfile-generator.sh -f $PROJECTFOLDER -n $APPNAME -d $DOTNETVERSION -$RUNOPTION
 	then
 		echo
 		echo -e "${RED}ERROR:${DEFAULT} Erro ao gerar dockerfile!"
@@ -249,7 +252,7 @@ main() {
 
 default_values
 
-while getopts hjyn:v:p:c:w:i:l:f:r: flags
+while getopts hjyn:v:p:c:w:i:l:f:r:d: flags
 do
 	case "${flags}" in
 		h) 	Help
@@ -267,6 +270,7 @@ do
 		f) eval PROJECTFOLDER=\"${OPTARG}\";;
 		r) eval RUNOPTION=\"${OPTARG}\";;
 		y) eval CONFIRMATION=y;;
+		d) eval DOTNETVERSION=\"${OPTARG}\";;
 
 	esac
 	

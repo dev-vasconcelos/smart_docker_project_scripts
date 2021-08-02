@@ -10,6 +10,7 @@ Help() {
 	echo "f		Nome da pasta do projeto"
 	echo "b		Use para buildar e rodar o container"
 	echo "c		Use para utilizar um projeto já compilado"
+	echo "d 	Versão do dotnet"
 	echo
 	echo "não utilize as opções -b e -c simultaneamente!"
 }
@@ -70,13 +71,16 @@ dockerfile-dotnet-build() {
 	dockerfile-dotnet-runtime 1
 }
 
-while getopts bchn:f: flags
+
+
+while getopts bchn:f:d: flags
 do
 	case "${flags}" in
 		h) 	Help
 			exit;;
 		f) PROJECTFOLDER=${OPTARG};;
 		n) PROJECTNAME=${OPTARG};;
+		d) DOTNETVERSION=${OPTARG};;
 		b) 
 			dockerfile-dotnet-build
 			exit;;
