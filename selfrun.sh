@@ -244,6 +244,7 @@ main() {
 	
 	validate_arguments
 	build_and_run
+	docker rmi $(docker images -f "dangling=true" -q)
 }
 
 default_values
