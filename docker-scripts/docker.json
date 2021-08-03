@@ -1,0 +1,11 @@
+{
+	"appname": "TesteGratsTutto",
+	"version": "1.1",
+	"hostport": "5015",
+	"containerport": "5001",
+	"net": "aplicationsnet",
+	"ip": "175.22.1.5",
+	"runoption": "b",
+  "confirmation":"y",
+  "dotnetversion":"3.1"
+}

@@ -62,7 +62,7 @@ get_json_values() {
 	RUNOPTION=$(grep -Po '"runoption": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
 	CONFIRMATION=$(grep -Po '"confirmation": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
 	DOTNETVERSION=$(grep -Po '"dotnetversion": *\K"[^"]*"' $docker_json_path | sed -e 's/^"//' -e 's/"$//')
-
+  print_all_vars
 }
 
 
@@ -190,6 +190,13 @@ build_and_run() {
 		echo
 		exit 1
 	fi
+
+	
+	if [ "${PROJECTFOLDER}" != "." ]
+	then
+		mv Dockerfile $PROJECTFOLDER/Dockerfile
+	fi
+
 	
 	if [ "${VOLUME}" == "" ]
 	then
