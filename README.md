@@ -27,7 +27,7 @@ Para atualizar vários projetos por exemplo:
 ```sh
 $ phandler atualizar $projeto0 $projeto1 $projeto2
 ```
-
+obs: As funções marcadas serão adicionadas em breve
 ### Container
 | Função | Descrição |
 | ------ | ------ |
