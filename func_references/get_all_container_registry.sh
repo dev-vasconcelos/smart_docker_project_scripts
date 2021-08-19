@@ -7,20 +7,20 @@ read sub_string
 echo "Forçar todos downloads[y/n]?(para perguntar em cada aperte ENTER)"
 read force
 
-if [ -z "$registry_addr"]; then
+if [ -z "$registry_addr" ]; then
   registry_addr="192.168.75.141:5000"
 fi
 
 if [ ! -z "$rule" ]; then
-  for i in $(curl -s $registry_addr/v2/_catalog | jq .repositories);do 
+  for i in $(curl -s http://$registry_addr/v2/_catalog | jq .repositories);do 
     image_addr=$(echo $i | tr -d '[=,=]\n\r' | tr -d '[="=]\n\r' | tr '[:upper:]' '[:lower:]')
     if [[ "$force" == *"y"* ]];then 
-          docker pull $registry_addr/$image_addr
+          docker pull --all-tags $registry_addr/$image_addr
     else 
       echo baixar "$i"?
         read b
         if [[ "$b" == *"y"* ]];then
-          docker pull $registry_addr/$image_addr
+          docker pull --all-tags $registry_addr/$image_addr
           echo "comando"
         else
           echo "-----------------"
@@ -29,18 +29,18 @@ if [ ! -z "$rule" ]; then
     fi
   done
 else
-  for i in $(curl -s $registry_addr/v2/_catalog | jq .repositories); do 
+  for i in $(curl -s http://$registry_addr/v2/_catalog | jq .repositories); do 
     if [[ "$i" == *"$sub_string"* ]]; then 
       image_addr=$(echo $i | tr -d '[=,=]\n\r' | tr -d '[="=]\n\r' | tr '[:upper:]' '[:lower:]')
       if [[ "$force" == *"y"* ]];then
                 echo $registry_addr/$image_addr
         echo $image_addr
-        docker pull $registry_addr/$image_addr
+        docker pull --all-tags $registry_addr/$image_addr
       else
         echo baixar "$i"?
         read b
         if [[ "$b" == *"y"* ]];then
-          docker pull $registry_addr/$image_addr 
+          docker pull --all-tags $registry_addr/$image_addr 
         else
           echo "-----------------"
           b="n"

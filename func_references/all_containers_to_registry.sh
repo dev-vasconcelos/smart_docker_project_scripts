@@ -22,6 +22,7 @@ for container_id in ${arr[@]}; do
   fi
 
   docker commit $container_id $commit_name
+  docker push $commit_name
 
 done
 
